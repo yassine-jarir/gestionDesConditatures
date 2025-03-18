@@ -7,9 +7,41 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
+/**
+ * @OA\Info(
+ *      version="1.0.0",
+ *      title="Job API",
+ *      description="API Documentation for Job Management",
+ * )
+ *
+ * @OA\SecurityScheme(
+ *      securityScheme="bearerAuth",
+ *      type="http",
+ *      scheme="bearer"
+ * )
+ */
 class AuthController extends Controller
 {
-    // User Registration
+    /**
+     * @OA\Post(
+     *      path="/register",
+     *      tags={"Authentication"},
+     *      summary="Register a new user",
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(
+     *              required={"name","email","password"},
+     *              @OA\Property(property="name", type="string", example="John Doe"),
+     *              @OA\Property(property="email", type="string", example="john@example.com"),
+     *              @OA\Property(property="password", type="string", example="password123"),
+     *              @OA\Property(property="skills", type="array", @OA\Items(type="string"), example={"PHP", "Laravel"}),
+     *              @OA\Property(property="phone_number", type="string", example="123456789")
+     *          )
+     *      ),
+     *      @OA\Response(response=201, description="User registered successfully"),
+     *      @OA\Response(response=422, description="Validation error")
+     * )
+     */
     public function register(Request $request)
     {
         $request->validate([
@@ -21,7 +53,7 @@ class AuthController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => $request->password,
+            'password' => Hash::make($request->password), // Hash password
             'skills' => $request->skills,
             'phone_number' => $request->phone_number,
         ]);
@@ -31,7 +63,23 @@ class AuthController extends Controller
         return response()->json(['token' => $token, 'user' => $user], 201);
     }
 
-    // User Login
+    /**
+     * @OA\Post(
+     *      path="/login",
+     *      tags={"Authentication"},
+     *      summary="User Login",
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(
+     *              required={"email","password"},
+     *              @OA\Property(property="email", type="string", example="john@example.com"),
+     *              @OA\Property(property="password", type="string", example="password123")
+     *          )
+     *      ),
+     *      @OA\Response(response=200, description="Login successful"),
+     *      @OA\Response(response=401, description="Unauthorized")
+     * )
+     */
     public function login(Request $request)
     {
         $request->validate([
@@ -41,8 +89,8 @@ class AuthController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
-        if (!$user || !$request->password== $user->password) {
-            return response()->json(['email' => ['Invalid credentials.']]);
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json(['error' => 'Invalid credentials'], 401);
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
@@ -50,35 +98,18 @@ class AuthController extends Controller
         return response()->json(['token' => $token, 'user' => $user], 200);
     }
 
-     public function logout(Request $request)
+    /**
+     * @OA\Post(
+     *      path="/logout",
+     *      tags={"Authentication"},
+     *      summary="Logout user",
+     *      security={{"bearerAuth":{}}},
+     *      @OA\Response(response=200, description="Logged out successfully")
+     * )
+     */
+    public function logout(Request $request)
     {
         $request->user()->tokens()->delete();
         return response()->json(['message' => 'Logged out'], 200);
     }
-
-    public function updateProfile(Request $request)
-{
-    $user = Auth::user();
-
-    $validatedData = $request->validate([
-        'name' => 'string|max:255',
-        'email' => 'email|unique:users,email,' . $user->id, // "This email belongs to this user ID, so don’t treat it as a duplicate."
-        'phone_number' => 'integer|nullable',
-        'skills' => 'array|nullable',  
-        'passwords' => 'nullable'
-    ]);
-/** @var \App\Models\User $user */ 
-
-   if( $user->update($validatedData)){
-    return response()->json([
-        'message' => 'Profile updated successfully',
-        'user' => $user
-    ]);   }
-   else{
-    return response()->json(['message'=> 'Error updating profile'],500);
-   }
-
- 
-}
-
 }
