@@ -1,0 +1,552 @@
+{
+  "info": {
+    "name": "Job API",
+    "description": "Collection of all endpoints for the Job API application",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "description": "Endpoints for user authentication",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/register",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "register"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\",\n  \"password_confirmation\": \"password123\"\n}"
+            },
+            "description": "Register a new user"
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "description": "Login and get JWT token"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData && jsonData.token) {",
+                  "    pm.environment.set('jwt_token', jsonData.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/logout",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "logout"
+              ]
+            },
+            "description": "Logout and invalidate JWT token"
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/refresh",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "refresh"
+              ]
+            },
+            "description": "Refresh JWT token"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData && jsonData.token) {",
+                  "    pm.environment.set('jwt_token', jsonData.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "CV Management",
+      "description": "Endpoints for CV management",
+      "item": [
+        {
+          "name": "Get CVs",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/cv/getcv",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "cv",
+                "getcv"
+              ]
+            },
+            "description": "Get CVs for the authenticated user"
+          }
+        },
+        {
+          "name": "Upload CV",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "cv_file",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/cv/upload",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "cv",
+                "upload"
+              ]
+            },
+            "description": "Upload a CV"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Profile Management",
+      "description": "Endpoints for profile management",
+      "item": [
+        {
+          "name": "Update Profile",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe Updated\",\n  \"email\": \"john_updated@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/profile/update",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "profile",
+                "update"
+              ]
+            },
+            "description": "Update user profile"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Job Management",
+      "description": "Endpoints for job management",
+      "item": [
+        {
+          "name": "Get My Jobs",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/myJobs",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "myJobs"
+              ]
+            },
+            "description": "Get jobs created by the authenticated user"
+          }
+        },
+        {
+          "name": "Get All Jobs",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/job",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "job"
+              ]
+            },
+            "description": "Get all available jobs"
+          }
+        },
+        {
+          "name": "Create Job",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Software Developer\",\n  \"description\": \"We are looking for a skilled software developer\",\n  \"requirements\": \"5+ years of experience\",\n  \"location\": \"Remote\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/job",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "job"
+              ]
+            },
+            "description": "Create a new job posting"
+          }
+        },
+        {
+          "name": "Update Job",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Senior Software Developer\",\n  \"description\": \"Updated job description\",\n  \"requirements\": \"7+ years of experience\",\n  \"location\": \"Remote\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/job/:job_id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "job",
+                ":job_id"
+              ],
+              "variable": [
+                {
+                  "key": "job_id",
+                  "value": "1",
+                  "description": "ID of the job to update"
+                }
+              ]
+            },
+            "description": "Update an existing job posting"
+          }
+        },
+        {
+          "name": "Delete Job",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/job/:job_id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "job",
+                ":job_id"
+              ],
+              "variable": [
+                {
+                  "key": "job_id",
+                  "value": "1",
+                  "description": "ID of the job to delete"
+                }
+              ]
+            },
+            "description": "Delete a job posting"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "description": "Admin endpoints for managing jobs and users",
+      "item": [
+        {
+          "name": "Get All Jobs",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/job",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "job"
+              ]
+            },
+            "description": "Admin endpoint to get all jobs"
+          }
+        },
+        {
+          "name": "Delete Job",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/jobs/:job_id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "jobs",
+                ":job_id"
+              ],
+              "variable": [
+                {
+                  "key": "job_id",
+                  "value": "1",
+                  "description": "ID of the job to delete"
+                }
+              ]
+            },
+            "description": "Admin endpoint to delete a job"
+          }
+        },
+        {
+          "name": "Get All Users",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/admin/users",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "users"
+              ]
+            },
+            "description": "Admin endpoint to get all users"
+          }
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "
+

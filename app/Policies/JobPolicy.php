@@ -1,66 +1,42 @@
 <?php
-
 namespace App\Policies;
 
-use App\Models\Job;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
+use App\Models\Job;
 
 class JobPolicy
 {
-    /**
-     * Determine whether the user can view any models.
-     */
-    public function viewAny(User $user): bool
+    public function viewMyJobs(User $user)
     {
-        return false;
+        return $user->role === 'recruteur';
+    }
+    public function create(User $user)
+    {
+        return $user->role === 'recruteur';
     }
 
-    /**
-     * Determine whether the user can view the model.
-     */
-    public function view(User $user, Job $job): bool
+    public function update(User $user, Job $job)
     {
-        return false;
+        return $user->role === 'recruteur' && $user->id === $job->recruteur_id;
     }
 
-    /**
-     * Determine whether the user can create models.
-     */
-    public function create(User $user): bool
+    public function delete(User $user, Job $job)
     {
-        return false;
+        return $user->role === 'recruteur' && $user->id === $job->recruteur_id;
     }
 
-    /**
-     * Determine whether the user can update the model.
-     */
-    public function update(User $user, Job $job): bool
+    public function viewAny(User $user)
     {
-        return false;
+        return $user->role === 'admin';
     }
 
-    /**
-     * Determine whether the user can delete the model.
-     */
-    public function delete(User $user, Job $job): bool
+    public function viewCandidates(User $user, Job $job)
     {
-        return false;
+        return $user->role === 'recruteur' && $user->id === $job->recruiter_id;
     }
 
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, Job $job): bool
+    public function exportCandidates(User $user, Job $job)
     {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, Job $job): bool
-    {
-        return false;
+        return $user->role === 'recruteur' && $user->id === $job->recruiter_id;
     }
 }

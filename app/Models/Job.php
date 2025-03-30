@@ -10,12 +10,11 @@ class Job extends Model
     /** @use HasFactory<\Database\Factories\JobFactory> */
     use HasFactory;
     protected $table = 'jobs_apps';
-   protected $protected = ['name', 'description', 'location', 'salary', 'company'];
-
-
-
+   protected $fillable = ['name',  'recruteur_id', 'description', 'location', 'salary', 'company'];
 
    public function user(){
-    return $this->belongsToMany(User::class);
+    return $this->belongsTo(User::class);
    }
+ 
 }
+ 

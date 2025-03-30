@@ -1,0 +1,525 @@
+{
+  "api_documentation": {
+    "name": "Job API Documentation",
+    "version": "1.0.0",
+    "description": "API documentation for Job Application System",
+    "endpoints": [
+      {
+        "group": "Authentication",
+        "endpoints": [
+          {
+            "name": "Register",
+            "method": "POST",
+            "url": "/api/register",
+            "description": "Register a new user",
+            "parameters": [
+              {
+                "name": "name",
+                "type": "string",
+                "required": true,
+                "description": "User's full name"
+              },
+              {
+                "name": "email",
+                "type": "string",
+                "required": true,
+                "description": "User's email address"
+              },
+              {
+                "name": "password",
+                "type": "string",
+                "required": true,
+                "description": "User's password"
+              }
+            ],
+            "example_request": {
+              "name": "Test User",
+              "email": "test@example.com",
+              "password": "password123"
+            },
+            "example_response": {
+              "status": "success",
+              "message": "User registered successfully",
+              "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+            }
+          },
+          {
+            "name": "Login",
+            "method": "POST",
+            "url": "/api/login",
+            "description": "Authenticate user and retrieve JWT token",
+            "parameters": [
+              {
+                "name": "email",
+                "type": "string",
+                "required": true,
+                "description": "User's email address"
+              },
+              {
+                "name": "password",
+                "type": "string",
+                "required": true,
+                "description": "User's password"
+              }
+            ],
+            "example_request": {
+              "email": "test@example.com",
+              "password": "password123"
+            },
+            "example_response": {
+              "status": "success",
+              "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+            }
+          },
+          {
+            "name": "Logout",
+            "method": "POST",
+            "url": "/api/logout",
+            "description": "Invalidate the current JWT token",
+            "parameters": [],
+            "headers": [
+              {
+                "name": "Authorization",
+                "value": "Bearer {token}",
+                "required": true
+              }
+            ],
+            "example_response": {
+              "status": "success",
+              "message": "Successfully logged out"
+            }
+          },
+          {
+            "name": "Refresh Token",
+            "method": "POST",
+            "url": "/api/refresh",
+            "description": "Refresh JWT token",
+            "headers": [
+              {
+                "name": "Authorization",
+                "value": "Bearer {token}",
+                "required": true
+              }
+            ],
+            "example_response": {
+              "status": "success",
+              "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+            }
+          }
+        ]
+      },
+      {
+        "group": "CV Management",
+        "endpoints": [
+          {
+            "name": "Get CVs",
+            "method": "GET",
+            "url": "/api/cv/getcv",
+            "description": "Retrieve all CVs for the authenticated user",
+            "headers": [
+              {
+                "name": "Authorization",
+                "value": "Bearer {token}",
+                "required": true
+              }
+            ],
+            "example_response": {
+              "status": "success",
+              "data": [
+                {
+                  "id": 1,
+                  "user_id": 1,
+                  "filename": "resume.pdf",
+                  "path": "/storage/cv/user_1/resume.pdf",
+                  "created_at": "2023-07-15T12:30:45Z",
+                  "updated_at": "2023-07-15T12:30:45Z"
+                }
+              ]
+            }
+          },
+          {
+            "name": "Upload CV",
+            "method": "POST",
+            "url": "/api/cv/upload",
+            "description": "Upload a CV file",
+            "headers": [
+              {
+                "name": "Authorization",
+                "value": "Bearer {token}",
+                "required": true
+              }
+            ],
+            "parameters": [
+              {
+                "name": "cv",
+                "type": "file",
+                "required": true,
+                "description": "CV file to upload (PDF, DOCX)"
+              }
+            ],
+            "example_response": {
+              "status": "success",
+              "message": "CV uploaded successfully",
+              "data": {
+                "id": 2,
+                "filename": "resume_updated.pdf",
+                "path": "/storage/cv/user_1/resume_updated.pdf"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "group": "Profile Management",
+        "endpoints": [
+          {
+            "name": "Update Profile",
+            "method": "POST",
+            "url": "/api/profile/update",
+            "description": "Update user profile information",
+            "headers": [
+              {
+                "name": "Authorization",
+                "value": "Bearer {token}",
+                "required": true
+              }
+            ],
+            "parameters": [
+              {
+                "name": "name",
+                "type": "string",
+                "required": false,
+                "description": "User's updated full name"
+              },
+              {
+                "name": "email",
+                "type": "string",
+                "required": false,
+                "description": "User's updated email address"
+              }
+            ],
+            "example_request": {
+              "name": "Updated Name",
+              "email": "updated@example.com"
+            },
+            "example_response": {
+              "status": "success",
+              "message": "Profile updated successfully",
+              "data": {
+                "id": 1,
+                "name": "Updated Name",
+                "email": "updated@example.com",
+                "updated_at": "2023-07-16T09:45:21Z"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "group": "Jobs",
+        "endpoints": [
+          {
+            "name": "Get All Jobs",
+            "method": "GET",
+            "url": "/api/job",
+            "description": "Retrieve all available jobs",
+            "headers": [
+              {
+                "name": "Authorization",
+                "value": "Bearer {token}",
+                "required": true
+              }
+            ],
+            "example_response": {
+              "status": "success",
+              "data": [
+                {
+                  "id": 1,
+                  "title": "Software Developer",
+                  "description": "Job description here",
+                  "requirements": "Job requirements here",
+                  "created_at": "2023-07-14T10:30:45Z",
+                  "updated_at": "2023-07-14T10:30:45Z"
+                },
+                {
+                  "id": 2,
+                  "title": "UX Designer",
+                  "description": "Design job description",
+                  "requirements": "Design job requirements",
+                  "created_at": "2023-07-14T11:20:15Z",
+                  "updated_at": "2023-07-14T11:20:15Z"
+                }
+              ]
+            }
+          },
+          {
+            "name": "Create Job",
+            "method": "POST",
+            "url": "/api/job",
+            "description": "Create a new job posting",
+            "headers": [
+              {
+                "name": "Authorization",
+                "value": "Bearer {token}",
+                "required": true
+              }
+            ],
+            "parameters": [
+              {
+                "name": "title",
+                "type": "string",
+                "required": true,
+                "description": "Job title"
+              },
+              {
+                "name": "description",
+                "type": "string",
+                "required": true,
+                "description": "Job description"
+              },
+              {
+                "name": "requirements",
+                "type": "string",
+                "required": true,
+                "description": "Job requirements"
+              }
+            ],
+            "example_request": {
+              "title": "Software Developer",
+              "description": "Job description here",
+              "requirements": "Job requirements here"
+            },
+            "example_response": {
+              "status": "success",
+              "message": "Job created successfully",
+              "data": {
+                "id": 3,
+                "title": "Software Developer",
+                "description": "Job description here",
+                "requirements": "Job requirements here",
+                "created_at": "2023-07-16T14:25:30Z",
+                "updated_at": "2023-07-16T14:25:30Z"
+              }
+            }
+          },
+          {
+            "name": "Update Job",
+            "method": "PUT",
+            "url": "/api/job/{id}",
+            "description": "Update an existing job posting",
+            "headers": [
+              {
+                "name": "Authorization",
+                "value": "Bearer {token}",
+                "required": true
+              }
+            ],
+            "path_parameters": [
+              {
+                "name": "id",
+                "type": "integer",
+                "required": true,
+                "description": "Job ID"
+              }
+            ],
+            "parameters": [
+              {
+                "name": "title",
+                "type": "string",
+                "required": false,
+                "description": "Updated job title"
+              },
+              {
+                "name": "description",
+                "type": "string",
+                "required": false,
+                "description": "Updated job description"
+              },
+              {
+                "name": "requirements",
+                "type": "string",
+                "required": false,
+                "description": "Updated job requirements"
+              }
+            ],
+            "example_request": {
+              "title": "Updated Job Title",
+              "description": "Updated description",
+              "requirements": "Updated requirements"
+            },
+            "example_response": {
+              "status": "success",
+              "message": "Job updated successfully",
+              "data": {
+                "id": 1,
+                "title": "Updated Job Title",
+                "description": "Updated description",
+                "requirements": "Updated requirements",
+                "created_at": "2023-07-14T10:30:45Z",
+                "updated_at": "2023-07-16T15:10:25Z"
+              }
+            }
+          },
+          {
+            "name": "Delete Job",
+            "method": "DELETE",
+            "url": "/api/job/{id}",
+            "description": "Delete a job posting",
+            "headers": [
+              {
+                "name": "Authorization",
+                "value": "Bearer {token}",
+                "required": true
+              }
+            ],
+            "path_parameters": [
+              {
+                "name": "id",
+                "type": "integer",
+                "required": true,
+                "description": "Job ID"
+              }
+            ],
+            "example_response": {
+              "status": "success",
+              "message": "Job deleted successfully"
+            }
+          }
+        ]
+      },
+      {
+        "group": "Applications",
+        "endpoints": [
+          {
+            "name": "Apply for Job",
+            "method": "POST",
+            "url": "/api/job/apply",
+            "description": "Apply for a specific job",
+            "headers": [
+              {
+                "name": "Authorization",
+                "value": "Bearer {token}",
+                "required": true
+              }
+            ],
+            "parameters": [
+              {
+                "name": "job_id",
+                "type": "integer",
+                "required": true,
+                "description": "ID of the job to apply for"
+              },
+              {
+                "name": "cover_letter",
+                "type": "string",
+                "required": true,
+                "description": "Cover letter for the application"
+              }
+            ],
+            "example_request": {
+              "job_id": 1,
+              "cover_letter": "Your cover letter here"
+            },
+            "example_response": {
+              "status": "success",
+              "message": "Application submitted successfully",
+              "data": {
+                "id": 1,
+                "user_id": 1,
+                "job_id": 1,
+                "status": "pending",
+                "created_at": "2023-07-16T16:30:45Z"
+              }
+            }
+          },
+          {
+            "name": "Apply for Multiple Jobs",
+            "method": "POST",
+            "url": "/api/postuler-multiple",
+            "description": "Apply for multiple jobs with one request",
+            "headers": [
+              {
+                "name": "Authorization",
+                "value": "Bearer {token}",
+                "required": true
+              }
+            ],
+            "parameters": [
+              {
+                "name": "job_ids",
+                "type": "array",
+                "required": true,
+                "description": "Array of job IDs to apply for"
+              },
+              {
+                "name": "cover_letter",
+                "type": "string",
+                "required": true,
+                "description": "Cover letter for all applications"
+              }
+            ],
+            "example_request": {
+              "job_ids": [1, 2, 3],
+              "cover_letter": "Your cover letter here"
+            },
+            "example_response": {
+              "status": "success",
+              "message": "Applications submitted successfully",
+              "data": [
+                {
+                  "id": 2,
+                  "user_id": 1,
+                  "job_id": 1,
+                  "status": "pending",
+                  "created_at": "2023-07-16T17:15:20Z"
+                },
+                {
+                  "id": 3,
+                  "user_id": 1,
+                  "job_id": 2,
+                  "status": "pending",
+                  "created_at": "2023-07-16T17:15:20Z"
+                },
+                {
+                  "id": 4,
+                  "user_id": 1,
+                  "job_id": 3,
+                  "status": "pending",
+                  "created_at": "2023-07-16T17:15:20Z"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "group": "Admin",
+        "endpoints": [
+          {
+            "name": "Get All Users",
+            "method": "GET",
+            "url": "/api/admin/users",
+            "description": "Admin only: Get all registered users",
+            "headers": [
+              {
+                "name": "Authorization",
+                "value": "Bearer {token}",
+                "required": true
+              }
+            ],
+            "middleware": ["auth", "can:manage-users"],
+            "example_response": {
+              "status": "success",
+              "data": [
+                {
+                  "id": 1,
+                  "name": "Admin User",
+                  "email": "admin@example.com",
+                  "role": "admin",
+                  "created_at": "2023-07-10T08:30:15Z"
+                },
+                {
+                  "id": 2,
+                  "name": "Regular User",
+                  "email": "
+

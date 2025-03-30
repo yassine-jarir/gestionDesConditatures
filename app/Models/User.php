@@ -6,12 +6,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
+ use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable
-{
+class User extends Authenticatable implements JWTSubject{
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasApiTokens;
+    use HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -22,11 +21,17 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'phone_number',
-        'skills',
-
+         'role'
     ];
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
 
+    public function getJWTCustomClaims()
+    {
+        return [];
+    }
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -54,7 +59,28 @@ class User extends Authenticatable
     public function cvs(){
         return $this->hasOne(Cv::class);
     }
+
     public function jobs_apps(){
-        return $this->belongsToMany(Job::class);
+        return $this->hasMany(Job::class);
+    }
+    
+    public function competences(){
+        return $this->belongsToMany(Competence::class);
+    }
+
+    // roels 
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isRecruteur(): bool
+    {
+        return $this->role === 'recruteur';
+    }
+
+    public function isCandidat(): bool
+    {
+        return $this->role === 'candidat';
     }
 }

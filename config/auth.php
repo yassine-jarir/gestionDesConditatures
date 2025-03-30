@@ -14,9 +14,10 @@ return [
     */
 
     'defaults' => [
-        'guard' => env('AUTH_GUARD', 'web'),
-        'passwords' => env('AUTH_PASSWORD_BROKER', 'users'),
+        'guard' => 'api',
+        'passwords' => 'users',
     ],
+ 
 
     /*
     |--------------------------------------------------------------------------
@@ -43,18 +44,15 @@ return [
     ],
 
     'api' => [
-        'driver' => 'token',
-        'provider' => 'users',
-        'hash' => false,
-    ],
-
-    'sunctum' => [
-        'driver' => 'session', 
+        'driver' => 'jwt',
         'provider' => 'users',
     ],
 
+     'jwt' => [
+        'driver' => 'jwt',
+        'provider' => 'users',
     ],
-
+],
     /*
     |--------------------------------------------------------------------------
     | User Providers
